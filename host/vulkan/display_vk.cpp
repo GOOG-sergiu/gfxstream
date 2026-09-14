@@ -803,6 +803,14 @@ DisplayVk::PostResult DisplayVk::postImpl(const Post& postCmd) {
                 res = m_vk.vkWaitForFences(m_vkDevice, 1, &postCompleteFence, VK_TRUE,
                                            kVkWaitForFencesTimeoutNsecs);
             }
+            if (res == VK_TIMEOUT) {
+                GFXSTREAM_ERROR(
+                    "DisplayVk: Timeout waiting for postCompleteFence (10s). Dropping frame.");
+                if (imResources) {
+                    m_compositorVk->releaseImmediateModeResources(imResources);
+                }
+                return postResource;
+            }
             VK_CHECK(res);
 
             // This should always be waited even in failure

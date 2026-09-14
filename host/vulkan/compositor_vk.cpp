@@ -1697,6 +1697,11 @@ CompositorVk::CompositionFinishedWaitable CompositorVk::compose(
                 res = m_vk.vkWaitForFences(m_vkDevice, 1, &composeCompleteFence, VK_TRUE,
                                            kVkWaitForFencesTimeoutNsecs);
             }
+            if (res == VK_TIMEOUT) {
+                GFXSTREAM_ERROR(
+                    "CompositorVk: Timeout waiting for composeCompleteFence (10s). Dropping frame.");
+                return frameResources;
+            }
             VK_CHECK(res);
             return frameResources;
         }).share();

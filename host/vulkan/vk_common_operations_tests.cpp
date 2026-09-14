@@ -220,6 +220,15 @@ TEST_F(VkEmulationBufferTransferTest, RoundTripsDepthStencilColorBufferContents)
     }
 }
 
+TEST_F(VkEmulationBufferTransferTest, ColorBufferImageCreateInfoIncludesStorageUsageWhenSupported) {
+    auto imageCi = mVkEmu->generateColorBufferVkImageCreateInfo(
+        VK_FORMAT_R8G8B8A8_UNORM, 64, 64, VK_IMAGE_TILING_OPTIMAL, 1);
+    ASSERT_NE(imageCi, nullptr);
+    EXPECT_NE(imageCi->usage & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, 0u);
+    EXPECT_NE(imageCi->usage & VK_IMAGE_USAGE_SAMPLED_BIT, 0u);
+    EXPECT_NE(imageCi->usage & VK_IMAGE_USAGE_STORAGE_BIT, 0u);
+}
+
 }  // namespace
 }  // namespace vk
 }  // namespace host
